@@ -1,0 +1,173 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="user-register.html">
+
+<dom-module id="user-login">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #register {
+        display: none;
+        width: 500px;
+        height: 400px;
+
+        padding-top: 30px;
+        margin: auto;
+
+        background-color: #cccccc;
+        border-radius: 20px;
+        text-align: center;
+      }
+
+      #login {
+        width: 500px;
+        height: 350px;
+
+        padding-top: 30px;
+        margin: auto;
+
+        background-color: #cccccc;
+        border-radius: 20px;
+        text-align: center;
+      }
+
+      #credentials {
+
+        margin: 15px 0px 0px 90px;
+        top: 20px;
+      }
+
+      paper-button {
+        margin-top: 20px;
+        background-color: lightblue;
+      }
+
+      paper-input {
+        width: 300px;
+        height: 50px;
+
+        background-color: white;
+        border-radius: 5px;
+      }
+    </style>
+
+    <firebase-app id="userDB"
+      auth-domain="gif-bank-66e52.firebaseapp.com"
+      database-url="https://gif-bank-66e52.firebaseio.com"
+      api-key="AIzaSyDxiWWMWwyk8F9jUu6v7n0sNDFzl-Hl_2U"
+      storage-bucket="gif-bank-66e52.appspot.com"
+      messaging-sender-id="416444590172">
+    </firebase-app>
+
+    <user-register id="register"></user-register>
+    
+    <div id="login">
+      <h1>Login</h1>
+      <div id="credentials">
+        <paper-input type="email" autoValidate="true" id="loginEmail" label="Email address"></paper-input>
+        <paper-input autoValidate="true" id="loginPassword" label="Password" type="password"></paper-input>
+      </div>
+      <paper-button id="btnLogin" on-click="login">Login</paper-button> <br />
+      <paper-button id="btnRegister" on-click="register">Register</paper-button>
+    </div>
+
+    <div id="register">
+      <h1>Register</h1>
+      <div id="credentials">
+        <paper-input type="email" autoValidate="true" id="registerEmail" label="Email address"></paper-input>
+        <paper-input type="password" autoValidate="true" id="registerPassword" label="Password"></paper-input>
+        <paper-input id="confirmPassword" type="password" autoValidate="true" label="Confirm Password"></paper-input>
+      </div>
+      <paper-button id="btnRegister" on-click="userRegister">Register</paper-button> <br />
+      <paper-button id="btnReturn" on-click="return">Return</paper-button>
+    </div>
+    </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class UserLogin extends Polymer.Element {
+      static get is() { return 'user-login'; }
+
+      login() {
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");;
+        var email = this.$.loginEmail.value;
+        var password = this.$.loginPassword.value;
+
+        //TODO: send the user credentials to see if 
+        // it has a matching user
+
+        // Searches the firebase for a user that holds 
+        // 'email' and 'password'.
+        userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
+          console.log(snapshot.val());
+          var user = snapshot.val();
+          if (user != null) {
+            alert('user found');
+            alert('<enter app>')
+          }
+          else {
+            alert('invalid email or password');
+          }
+        });
+      }
+
+      return() {
+        this.$.loginEmail.value = "";
+        this.$.loginPassword.value = "";
+
+        this.$.login.style.display = 'block';
+        this.$.register.style.display = 'none';
+      }
+
+      register() {
+        this.$.registerEmail.value = "";
+        this.$.registerPassword.value = "";
+        this.$.confirmPassword.value = "";
+
+        this.$.login.style.display = 'none';
+        this.$.register.style.display = 'block';
+      }
+
+      userRegister() {
+        var email = this.$.registerEmail.value;
+        var password = this.$.registerPassword.value;
+        var confirmPassword = this.$.confirmPassword.value;
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");
+
+        //TODO: validate email
+
+        // checks if passwords are matching
+        if (password === confirmPassword) {
+          userRef.push().set({email: email, password: password});
+          this.$.login.style.display = 'block';
+          this.$.register.style.display = 'none';
+        }
+
+
+      }
+
+
+      static get properties() {
+
+        return {
+          prop1: {
+            type: String,
+            value: 'login'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(UserLogin.is, UserLogin);
+  </script>
+</dom-module>

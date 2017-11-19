@@ -1,0 +1,7 @@
+{
+  "name": "gif-bank",
+  "short_name": "gif-bank",
+  "description": "gif-bank",
+  "start_url": "/",
+  "display": "standalone"
+}

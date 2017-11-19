@@ -1,0 +1,37 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="user-login.html">
+<link rel="import" href="user-register.html">
+
+
+<dom-module id="gif-bank-app" on-load="load()">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <user-login id="login" on-click="click"></user-login>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class GifBankApp extends Polymer.Element {
+      static get is() { return 'gif-bank-app'; }
+      
+      static get properties() {
+        return {
+          
+        };
+      }
+    }
+
+    window.customElements.define(GifBankApp.is, GifBankApp);
+  </script>
+</dom-module>
