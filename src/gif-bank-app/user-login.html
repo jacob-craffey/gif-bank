@@ -14,7 +14,7 @@
       #register {
         display: none;
         width: 500px;
-        height: 400px;
+        height: 460px;
 
         padding-top: 30px;
         margin: auto;
@@ -40,6 +40,10 @@
 
         margin: 15px 0px 0px 90px;
         top: 20px;
+      }
+      
+      .error {
+        color: red;
       }
 
       paper-button {
@@ -83,6 +87,7 @@
         <paper-input type="password" autoValidate="true" id="registerPassword" label="Password"></paper-input>
         <paper-input id="confirmPassword" type="password" autoValidate="true" label="Confirm Password"></paper-input>
       </div>
+      <p id="userError" class="error" style="display: none;">This username is already taken</p>
       <paper-button id="btnRegister" on-click="userRegister">Register</paper-button> <br />
       <paper-button id="btnReturn" on-click="return">Return</paper-button>
     </div>
@@ -98,7 +103,7 @@
 
       login() {
         var rootRef = firebase.database().ref();
-        var userRef = rootRef.child("user");;
+        var userRef = rootRef.child("user");
         var email = this.$.loginEmail.value;
         var password = this.$.loginPassword.value;
 
@@ -145,18 +150,32 @@
         var rootRef = firebase.database().ref();
         var userRef = rootRef.child("user");
 
+        if (email === "" || password === "" || confirmPassword === "") {
+          return;
+        }
+
         //TODO: validate email
 
         // checks if passwords are matching
         if (password === confirmPassword) {
-          userRef.push().set({email: email, password: password, files: []});
-          this.$.login.style.display = 'block';
-          this.$.register.style.display = 'none';
+          var rootRef = firebase.database().ref();
+          var userRef = rootRef.child("user");
+          var localThis = this;
+          userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
+            var fireBaseObj = snapshot.val()
+            if (!fireBaseObj) {
+              userRef.push().set({email: email, password: password, files: []});
+              localThis.$.login.style.display = 'block';
+              localThis.$.register.style.display = 'none';
+              localThis.$.userError.style.display = 'none';
+              return;
+            }
+            var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
+            localThis.$.userError.style.display = 'block';
+            return;
+          })
         }
-
-
       }
-
 
       static get properties() {
 
