@@ -108,9 +108,10 @@
         // Searches the firebase for a user that holds 
         // 'email' and 'password'.
         userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
-          console.log(snapshot.val());
-          var user = snapshot.val();
-          if (user != null) {
+          var fireBaseObj = snapshot.val()
+          var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
+          var firePass = user.password;
+          if (user != null && firePass == password) {
             alert('user found');
             alert('<enter app>')
           }
@@ -148,7 +149,7 @@
 
         // checks if passwords are matching
         if (password === confirmPassword) {
-          userRef.push().set({email: email, password: password});
+          userRef.push().set({email: email, password: password, files: []});
           this.$.login.style.display = 'block';
           this.$.register.style.display = 'none';
         }
