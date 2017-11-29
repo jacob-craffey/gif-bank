@@ -1,0 +1,102 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="giphy-table">
+  <template>
+    <style>
+      
+      .error {
+        color: red;
+      }
+
+      paper-button {
+        margin-top: 20px;
+        background-color: lightblue;
+      }
+
+      paper-input {
+        width: 300px;
+        height: 50px;
+
+        background-color: white;
+        border-radius: 5px;
+      }
+    </style>
+
+    <iron-ajax
+    id="ajax"
+    url="http://api.giphy.com/v1/gifs/random?api_key=qKbUBixbIAeArAGoQX0FxkMm5T9hWj2P"
+    params='{{getParams()}}'
+    handle-as="json"
+    on-response="handleGiphyResponse"
+    debounce-duration="300"></iron-ajax>
+
+    <h1>Search for gif</h1>
+    <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
+    </br>
+
+    <iron-list id="itemsList" items="[[giphyUrls]]" as="item">
+      <template>
+        <div>
+            <img src="[[item]]" height="200" width="200">
+        </div>
+      </template>
+    </iron-list>
+
+    </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class GiphyTable extends Polymer.Element {
+      static get is() { return 'giphy-table'; }
+
+      searchGif(e) {
+        if (13 === e.charCode) {
+          let searchParam = this.$.search.value;
+          console.log(searchParam)
+          this.fireAjax(searchParam);
+        }
+      }
+
+      handleGiphyResponse(e) {
+        this.push('giphyUrls', e.detail.response.data.image_url)
+
+        if(this.count != 1) {
+            return
+        }
+        const numQueries = 12;
+
+        for (var i = 0; i < numQueries - 1; i++) {
+            this.$.ajax.generateRequest();
+        }
+        this.count++;
+      }
+
+      fireAjax(query) {
+        this.set('giphyUrls', []);
+        this.count = 1;
+        this.$.ajax.set('params', {"tag": query });
+        this.$.ajax.generateRequest();
+      }
+
+      static get properties() {
+
+        return {
+            giphyUrls: {
+                type: Array,
+                value: []
+                }
+            };
+        }
+    }
+    window.customElements.define(GiphyTable.is, GiphyTable);
+  </script>
+</dom-module>
