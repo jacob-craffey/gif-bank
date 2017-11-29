@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
-<link rel="import" href="user-register.html">
 
 <dom-module id="user-login">
   <template>
@@ -147,15 +146,11 @@
         var email = this.$.registerEmail.value;
         var password = this.$.registerPassword.value;
         var confirmPassword = this.$.confirmPassword.value;
-        var rootRef = firebase.database().ref();
-        var userRef = rootRef.child("user");
 
         if (email === "" || password === "" || confirmPassword === "") {
           return;
         }
-
-        //TODO: validate email
-
+        
         // checks if passwords are matching
         if (password === confirmPassword) {
           var rootRef = firebase.database().ref();

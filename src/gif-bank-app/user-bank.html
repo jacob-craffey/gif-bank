@@ -1,0 +1,85 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+
+<dom-module id="user-bank">
+  <template>
+    <style>
+      
+      .error {
+        color: red;
+      }
+
+      paper-button {
+        margin-top: 20px;
+        background-color: lightblue;
+      }
+
+      paper-input {
+        width: 300px;
+        height: 50px;
+
+        background-color: white;
+        border-radius: 5px;
+      }
+    </style>
+    
+    <firebase-app id="userDB"
+      auth-domain="gif-bank-66e52.firebaseapp.com"
+      database-url="https://gif-bank-66e52.firebaseio.com"
+      api-key="AIzaSyDxiWWMWwyk8F9jUu6v7n0sNDFzl-Hl_2U"
+      storage-bucket="gif-bank-66e52.appspot.com"
+      messaging-sender-id="416444590172">
+    </firebase-app>
+
+    <firebase-query path="/images" data="{{gifs}}"></firebase-query>
+    
+    <paper-button id="gifs" on-click="addTwoGifs">Add Two Gifs</paper-button> <br />
+    <paper-button id="gifs" on-click="loadGifs">Load Gifs</paper-button> <br />
+
+    <h1>TEST</h1>
+    <iron-list id="itemsList" items="[[gifs]]">
+      <template>
+        <div>
+            <img src="[[item.url]]" height="42" width="42">
+        </div>
+      </template>
+    </iron-list>
+
+    </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class UserBank extends Polymer.Element {
+      static get is() { return 'user-bank'; }
+
+      addTwoGifs() {
+        var rootRef = firebase.database().ref();
+        var gifRef = rootRef.child("images");
+        var name1 = "test1";
+        var name2 = "test2";
+        var email1 = "jcraffey96@gmail.com";
+        var email2 = "test@mail.gvsu.edu";
+        var url1 = "https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif";
+        var url2 = "https://www.catgifpage.com/gifs/318.gif";
+        gifRef.push().set({email: email1, url: url1, name: name1});
+        gifRef.push().set({email: email2, url: url2, name: name2});
+      }
+
+      static get properties() {
+
+        return {
+          gifs: []
+        };
+      }
+    }
+
+    window.customElements.define(UserBank.is, UserBank);
+  </script>
+</dom-module>
