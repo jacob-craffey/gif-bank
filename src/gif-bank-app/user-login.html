@@ -2,14 +2,18 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 <dom-module id="user-login">
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
       }
 
+      /********** Register **********/
       #register {
         display: none;
         width: 500px;
@@ -23,7 +27,15 @@
         text-align: center;
       }
 
+      .error {
+        color: red;
+      }
+
+      /********** Login ***********/
       #login {
+        /* CTRL-F:: DEBUG */
+        display: block;
+
         width: 500px;
         height: 350px;
 
@@ -36,13 +48,8 @@
       }
 
       #credentials {
-
         margin: 15px 0px 0px 90px;
         top: 20px;
-      }
-      
-      .error {
-        color: red;
       }
 
       paper-button {
@@ -56,6 +63,63 @@
 
         background-color: white;
         border-radius: 5px;
+      }
+
+      /********** Header **********/
+      #header {
+        height: 75px;
+        width: 100%;
+        background-color: lightblue;
+        display: flex;
+      }
+
+      #header button {
+        height: 75px;
+        width: 150px;
+        background-color: lightblue;
+        font-size: 24px;
+        font-weight: bold;
+        border-style: none;
+      }
+
+      #header h1 {
+        padding-left: 50px;
+      }
+
+      #tabs {
+        position: relative;
+        left: 30%;
+      }
+
+      #tabs button:hover {
+        background-color: rgb(79, 196, 231);
+      }
+
+      /*********** GiphyTable ************/
+
+      #giphyTable {
+        /* CTRL-F:: DEBUG */
+        display: none;
+      }
+
+      #gif {
+        padding: 10px;
+      }
+
+      #itemsList {
+        width: 1000px;
+        display: flex;
+      }
+      
+      /********* Favorites **********/
+      #favorites {
+        display: none;
+        width: 500px;
+        height: 500px;
+        background-color: lightblue;
+        position: absolute;
+        top: 300px;
+        left: 500px;
       }
     </style>
 
@@ -90,6 +154,53 @@
       <paper-button id="btnRegister" on-click="userRegister">Register</paper-button> <br />
       <paper-button id="btnReturn" on-click="return">Return</paper-button>
     </div>
+
+    <div id="giphyTable">
+      <iron-ajax
+      id="ajax"
+      url="http://api.giphy.com/v1/gifs/random?api_key=qKbUBixbIAeArAGoQX0FxkMm5T9hWj2P"
+      params='{{getParams()}}'
+      handle-as="json"
+      on-response="handleGiphyResponse"
+      debounce-duration="300"></iron-ajax>
+
+      <div id="header">
+        <h1>gif-bank.</h1>
+        <div id="tabs">
+            <button type="button">Favorites</button>
+            <button type="button">Account</button>
+            <button type="button">Settings</button>
+        </div>
+      </div>
+  
+      <h1>Search for gif</h1>
+      <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
+      </br>
+  
+      <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled selected-items="{{selectedItem}}">
+          <template>
+              <div id="gif">
+                  <img src="[[item]]" height="200" width="200">
+              </div>
+            </template>
+      </iron-list>
+    </div>
+
+    <firebase-query
+    path="/images/">
+    </firebase-query>
+
+    <div id="favorites">
+      <h1>Favorites</h1>
+      <iron-list id="favoriteList" items="[[giphyFav]]" as="item">
+        <template>
+          <div>
+            <img src="[[item]]" height="200" width="200">
+          </div>
+        </template>
+      </iron-list>
+    </div>
+
     </template>
 
   <script>
@@ -105,7 +216,7 @@
         var userRef = rootRef.child("user");
         var email = this.$.loginEmail.value;
         var password = this.$.loginPassword.value;
-
+        var localThis = this;
         //TODO: send the user credentials to see if 
         // it has a matching user
 
@@ -116,13 +227,43 @@
           var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
           var firePass = user.password;
           if (user != null && firePass == password) {
-            alert('user found');
-            alert('<enter app>')
+            localStorage.setItem('email', email);
+            localThis.$.login.style.display = 'none';
+            localThis.$.giphyTable.style.display = 'block';
           }
           else {
             alert('invalid email or password');
           }
         });
+      }
+
+      searchGif(e) {
+        if (13 === e.charCode) {
+          let searchParam = this.$.search.value;
+          console.log(searchParam)
+          this.fireAjax(searchParam);
+        }
+      }
+
+      handleGiphyResponse(e) {
+        this.push('giphyUrls', e.detail.response.data.image_url)
+
+        if(this.count != 1) {
+            return
+        }
+        const numQueries = 12;
+
+        for (var i = 0; i < numQueries - 1; i++) {
+            this.$.ajax.generateRequest();
+        }
+        this.count++;
+      }
+
+      fireAjax(query) {
+        this.set('giphyUrls', []);
+        this.count = 1;
+        this.$.ajax.set('params', {"tag": query });
+        this.$.ajax.generateRequest();
       }
 
       return() {
@@ -141,6 +282,8 @@
         this.$.login.style.display = 'none';
         this.$.register.style.display = 'block';
       }
+
+
 
       userRegister() {
         var email = this.$.registerEmail.value;
@@ -172,12 +315,24 @@
         }
       }
 
+      _userUpdated(selectedItem) {
+        var email = localStorage.getItem("email");
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");
+        userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
+          var fireBaseObj = snapshot.val();
+          if (fireBaseObj) {
+            var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
+          } 
+        })
+      }
+
       static get properties() {
 
         return {
-          prop1: {
-            type: String,
-            value: 'login'
+          selectedItem: {
+            type: Object,
+            observer: '_userUpdated'
           }
         };
       }
