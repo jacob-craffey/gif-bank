@@ -44,7 +44,8 @@
     <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
     </br>
 
-    <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled selected-items="{{selectedItem}}">
+    <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled  
+     selected-items="{{selectedItems}}" >
         <template>
             <div id="gif">
                 <img src="[[item]]" height="200" width="200">
@@ -66,7 +67,6 @@
       searchGif(e) {
         if (13 === e.charCode) {
           let searchParam = this.$.search.value;
-          console.log(searchParam)
           this.fireAjax(searchParam);
         }
       }
@@ -92,8 +92,9 @@
         this.$.ajax.generateRequest();
       }
 
-      favoriteSelected(selectedItem) {
-        
+      favoriteSelected(selectedItems) {
+        console.log(selectedItems);
+        localStorage.setItem('favorites', selectedItems);
       }
 
       saveFavorites() {
@@ -117,7 +118,7 @@
         
 
         return {
-            selectedItem: {
+            selectedItems: {
               type: Object,
               observer: 'favoriteSelected'
             }

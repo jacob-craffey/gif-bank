@@ -117,14 +117,14 @@
         display: none;
       }
     </style>
-
+<!-- 
     <firebase-app id="userDB"
       auth-domain="gif-bank-66e52.firebaseapp.com"
       database-url="https://gif-bank-66e52.firebaseio.com"
       api-key="AIzaSyDxiWWMWwyk8F9jUu6v7n0sNDFzl-Hl_2U"
       storage-bucket="gif-bank-66e52.appspot.com"
       messaging-sender-id="416444590172">
-    </firebase-app>
+    </firebase-app> -->
     
     <div id="login">
         <h1>Login</h1>
@@ -164,7 +164,7 @@
     <image-favorites class="body-component" id="favorites"></image-favorites>
 
     <firebase-query
-    path="/images/">
+    path="/user">
     </firebase-query>
 
     </template>
@@ -192,8 +192,10 @@
           
           var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
           var firePass = user.password;
+          var userKey = Object.keys(fireBaseObj)[0];
           if (user != null && firePass == password) {
             localStorage.setItem('email', email);
+            localStorage.setItem('uid', userKey);
             localStorage.setItem('favorites', user.images == null ? [] : user.images);
             localThis.$.login.style.display = 'none';
             localThis.$.giphyTable.style.display = 'block';

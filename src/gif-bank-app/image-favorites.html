@@ -32,16 +32,27 @@
         background-color: white;
         border-radius: 5px;
       }
+
+      #favoriteList {
+        height: 200px;
+      }
     </style>
+
+    <firebase-query
+    path="/user/[[uid]]"
+    data="{{qryData}}">
+    </firebase-query>
+
     
 
     <div id="favorites">
       <h1>Favorites</h1>
-      <iron-list id="favoriteList" items="[[giphyFav]]" as="item">
-        <template>
+      <iron-list id="favoriteList">
+        <template is="dom-repeat" items="{{qryData}}" as="item">
           <div>
-            <img src="[[item]]" height="200" width="200">
+              <img src="[[item.$val]]" height="200" width="200">
           </div>
+
         </template>
       </iron-list>
     </div>
@@ -56,10 +67,27 @@
     class ImageFavorites extends Polymer.Element {
       static get is() { return 'image-favorites'; }
 
-      static get properties() {
+      dataChanged(e) {
+        
+        console.log(e[1]);
+        return e[1];
+      }
+
+       static get properties() {
 
         return {
-          gifs: []
+          uid: {
+            type: String,
+            value: localStorage.getItem('uid')
+          },
+          qryData: {
+            type: Object,
+            observer: 'dataChanged'
+          },
+          test: {
+            type: String,
+            value: localStorage.getItem('currentFav')
+          }
         };
       }
     }
