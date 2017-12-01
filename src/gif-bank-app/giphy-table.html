@@ -6,28 +6,29 @@
 <link rel="import" href="../../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
-<dom-module id="giphy-table">
-  <template>
-    <style>
-      
-      .error {
-        color: red;
-      }
+  <dom-module id="giphy-table">
+    <template>
+      <style>
+        
+        .error {
+          color: red;
+        }
 
-      paper-button {
-        margin-top: 20px;
-        background-color: lightblue;
-      }
+        paper-button {
+          margin-top: 20px;
+          background-color: lightblue;
+        }
 
-      paper-input {
-        width: 300px;
-        height: 50px;
+        paper-input {
+          width: 300px;
+          height: 50px;
 
-        background-color: white;
-        border-radius: 5px;
-      }
-    </style>
+          background-color: white;
+          border-radius: 5px;
+        }
+      </style>
 
+  <div id="giphyTable">
     <iron-ajax
     id="ajax"
     url="http://api.giphy.com/v1/gifs/random?api_key=qKbUBixbIAeArAGoQX0FxkMm5T9hWj2P"
@@ -36,17 +37,20 @@
     on-response="handleGiphyResponse"
     debounce-duration="300"></iron-ajax>
 
+    
+
     <h1>Search for gif</h1>
     <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
     </br>
 
-    <iron-list id="itemsList" items="[[giphyUrls]]" as="item">
-      <template>
-        <div>
-            <img src="[[item]]" height="200" width="200">
-        </div>
-      </template>
+    <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled selected-items="{{selectedItem}}">
+        <template>
+            <div id="gif">
+                <img src="[[item]]" height="200" width="200">
+            </div>
+          </template>
     </iron-list>
+  </div>
 
     </template>
 
@@ -87,13 +91,28 @@
         this.$.ajax.generateRequest();
       }
 
+      _userUpdated(selectedItem) {
+        var email = localStorage.getItem("email");
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");
+        userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
+
+          var fireBaseObj = snapshot.val();
+          if (fireBaseObj) {
+            localStorage.setItem('images', email);
+            var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
+          } 
+        })
+      }
+
       static get properties() {
+        
 
         return {
-            giphyUrls: {
-                type: Array,
-                value: []
-                }
+            selectedItem: {
+              type: Object,
+              observer: '_userUpdated'
+            }
             };
         }
     }

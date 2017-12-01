@@ -6,11 +6,11 @@
 <link rel="import" href="../../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
-<dom-module id="user-login">
+<dom-module id="main-page">
   <template>
     <style>
       :host {
-        display: flex;
+        display: block;
       }
 
       /********** Register **********/
@@ -32,6 +32,7 @@
       }
 
       /********** Login ***********/
+      
       #login {
         /* CTRL-F:: DEBUG */
         display: block;
@@ -65,15 +66,15 @@
         border-radius: 5px;
       }
 
-      /********** Header **********/
-      #header {
+      /********** NavBar **********/
+      #navbar {
+        display: none;
         height: 75px;
         width: 100%;
         background-color: lightblue;
-        display: flex;
       }
 
-      #header button {
+      #navbar button {
         height: 75px;
         width: 150px;
         background-color: lightblue;
@@ -82,13 +83,13 @@
         border-style: none;
       }
 
-      #header h1 {
+      #navbar h1 {
         padding-left: 50px;
       }
 
       #tabs {
         position: relative;
-        left: 30%;
+        left: 10%;
       }
 
       #tabs button:hover {
@@ -111,15 +112,9 @@
         display: flex;
       }
       
-      /********* Favorites **********/
+      /********** Image Favorites **********/
       #favorites {
         display: none;
-        width: 500px;
-        height: 500px;
-        background-color: lightblue;
-        position: absolute;
-        top: 300px;
-        left: 500px;
       }
     </style>
 
@@ -130,18 +125,17 @@
       storage-bucket="gif-bank-66e52.appspot.com"
       messaging-sender-id="416444590172">
     </firebase-app>
-
-    <user-register id="register"></user-register>
     
     <div id="login">
-      <h1>Login</h1>
-      <div id="credentials">
-        <paper-input type="email" autoValidate="true" id="loginEmail" label="Email address"></paper-input>
-        <paper-input autoValidate="true" id="loginPassword" label="Password" type="password"></paper-input>
-      </div>
-      <paper-button id="btnLogin" on-click="login">Login</paper-button> <br />
-      <paper-button id="btnRegister" on-click="register">Register</paper-button>
+        <h1>Login</h1>
+        <div id="credentials">
+            <paper-input type="email" autoValidate="true" id="loginEmail" label="Email address"></paper-input>
+            <paper-input autoValidate="true" id="loginPassword" label="Password" type="password"></paper-input>
+        </div>
+        <paper-button id="btnLogin" on-click="login">Login</paper-button> <br />
+        <paper-button id="btnRegister" on-click="register">Register</paper-button>
     </div>
+      
 
     <div id="register">
       <h1>Register</h1>
@@ -152,54 +146,25 @@
       </div>
       <p id="userError" class="error" style="display: none;">This username is already taken</p>
       <paper-button id="btnRegister" on-click="userRegister">Register</paper-button> <br />
-      <paper-button id="btnReturn" on-click="return">Return</paper-button>
+      <paper-button id="btnReturn" on-click="onReturn">Return</paper-button>
     </div>
 
-    <div id="giphyTable">
-      <iron-ajax
-      id="ajax"
-      url="http://api.giphy.com/v1/gifs/random?api_key=qKbUBixbIAeArAGoQX0FxkMm5T9hWj2P"
-      params='{{getParams()}}'
-      handle-as="json"
-      on-response="handleGiphyResponse"
-      debounce-duration="300"></iron-ajax>
-
-      <div id="header">
-        <h1>gif-bank.</h1>
-        <div id="tabs">
-            <button type="button">Favorites</button>
-            <button type="button">Account</button>
-            <button type="button">Settings</button>
-        </div>
+    <div id="navbar">
+      <h1>gif-bank.</h1>
+      <div id="tabs">
+          <button type="button" on-click="favorites">Favorites</button>
+          <button type="button">Account</button>
+          <button type="button">Settings</button>
       </div>
-  
-      <h1>Search for gif</h1>
-      <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
-      </br>
-  
-      <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled selected-items="{{selectedItem}}">
-          <template>
-              <div id="gif">
-                  <img src="[[item]]" height="200" width="200">
-              </div>
-            </template>
-      </iron-list>
     </div>
+
+    <giphy-table class="body-component" id="giphyTable"style="display: none"></giphy-table>
+
+    <image-favorites class="body-component" id="favorites"></image-favorites>
 
     <firebase-query
     path="/images/">
     </firebase-query>
-
-    <div id="favorites">
-      <h1>Favorites</h1>
-      <iron-list id="favoriteList" items="[[giphyFav]]" as="item">
-        <template>
-          <div>
-            <img src="[[item]]" height="200" width="200">
-          </div>
-        </template>
-      </iron-list>
-    </div>
 
     </template>
 
@@ -208,8 +173,8 @@
      * @customElement
      * @polymer
      */
-    class UserLogin extends Polymer.Element {
-      static get is() { return 'user-login'; }
+    class MainPage extends Polymer.Element {
+      static get is() { return 'main-page'; }
 
       login() {
         var rootRef = firebase.database().ref();
@@ -230,6 +195,7 @@
             localStorage.setItem('email', email);
             localThis.$.login.style.display = 'none';
             localThis.$.giphyTable.style.display = 'block';
+            localThis.$.navbar.style.display = "flex";
           }
           else {
             alert('invalid email or password');
@@ -237,36 +203,7 @@
         });
       }
 
-      searchGif(e) {
-        if (13 === e.charCode) {
-          let searchParam = this.$.search.value;
-          console.log(searchParam)
-          this.fireAjax(searchParam);
-        }
-      }
-
-      handleGiphyResponse(e) {
-        this.push('giphyUrls', e.detail.response.data.image_url)
-
-        if(this.count != 1) {
-            return
-        }
-        const numQueries = 12;
-
-        for (var i = 0; i < numQueries - 1; i++) {
-            this.$.ajax.generateRequest();
-        }
-        this.count++;
-      }
-
-      fireAjax(query) {
-        this.set('giphyUrls', []);
-        this.count = 1;
-        this.$.ajax.set('params', {"tag": query });
-        this.$.ajax.generateRequest();
-      }
-
-      return() {
+      onReturn() {
         this.$.loginEmail.value = "";
         this.$.loginPassword.value = "";
 
@@ -310,34 +247,27 @@
             }
             var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
             localThis.$.userError.style.display = 'block';
+            localThis.$.giphyTable.style.display = "block";            
             return;
           })
         }
       }
 
-      _userUpdated(selectedItem) {
-        var email = localStorage.getItem("email");
-        var rootRef = firebase.database().ref();
-        var userRef = rootRef.child("user");
-        userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
-          var fireBaseObj = snapshot.val();
-          if (fireBaseObj) {
-            var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
-          } 
-        })
+      favorites() {
+        this.$.giphyTable.style.display = "none"
+        this.$.favorites.style.display = "block";
       }
+
+
 
       static get properties() {
 
         return {
-          selectedItem: {
-            type: Object,
-            observer: '_userUpdated'
-          }
+          
         };
       }
     }
 
-    window.customElements.define(UserLogin.is, UserLogin);
+    window.customElements.define(MainPage.is, MainPage);
   </script>
 </dom-module>
