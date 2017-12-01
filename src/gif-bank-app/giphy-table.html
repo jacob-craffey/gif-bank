@@ -37,6 +37,7 @@
     on-response="handleGiphyResponse"
     debounce-duration="300"></iron-ajax>
 
+    <paper-button id="saveFavorites" on-click="saveFavorites">Save Favorites</paper-button>
     
 
     <h1>Search for gif</h1>
@@ -91,17 +92,24 @@
         this.$.ajax.generateRequest();
       }
 
-      _userUpdated(selectedItem) {
-        var email = localStorage.getItem("email");
+      favoriteSelected(selectedItem) {
+        
+      }
+
+      saveFavorites() {
         var rootRef = firebase.database().ref();
         var userRef = rootRef.child("user");
+        var email = localStorage.getItem('email');
+        var localThis = this;
+        
         userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
+          var fireBaseObj = snapshot.val()
+          var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
+          var favorites = localStorage.getItem('favorites');
+          var userKey = Object.keys(fireBaseObj)[0];
+          firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
+          
 
-          var fireBaseObj = snapshot.val();
-          if (fireBaseObj) {
-            localStorage.setItem('images', email);
-            var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
-          } 
         })
       }
 
@@ -111,7 +119,7 @@
         return {
             selectedItem: {
               type: Object,
-              observer: '_userUpdated'
+              observer: 'favoriteSelected'
             }
             };
         }

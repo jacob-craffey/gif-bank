@@ -152,6 +152,7 @@
     <div id="navbar">
       <h1>gif-bank.</h1>
       <div id="tabs">
+          <button type="button" on-click="search">Search</button>
           <button type="button" on-click="favorites">Favorites</button>
           <button type="button">Account</button>
           <button type="button">Settings</button>
@@ -182,17 +183,18 @@
         var email = this.$.loginEmail.value;
         var password = this.$.loginPassword.value;
         var localThis = this;
-        //TODO: send the user credentials to see if 
-        // it has a matching user
 
-        // Searches the firebase for a user that holds 
-        // 'email' and 'password'.
         userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
           var fireBaseObj = snapshot.val()
+          if (fireBaseObj == null) {
+            return;
+          }
+          
           var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
           var firePass = user.password;
           if (user != null && firePass == password) {
             localStorage.setItem('email', email);
+            localStorage.setItem('favorites', user.images == null ? [] : user.images);
             localThis.$.login.style.display = 'none';
             localThis.$.giphyTable.style.display = 'block';
             localThis.$.navbar.style.display = "flex";
@@ -239,15 +241,13 @@
           userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
             var fireBaseObj = snapshot.val()
             if (!fireBaseObj) {
-              userRef.push().set({email: email, password: password, files: []});
+              userRef.push().set({email: email, password: password, images: []});
               localThis.$.login.style.display = 'block';
               localThis.$.register.style.display = 'none';
               localThis.$.userError.style.display = 'none';
               return;
             }
-            var user =  fireBaseObj[Object.keys(fireBaseObj)[0]];
-            localThis.$.userError.style.display = 'block';
-            localThis.$.giphyTable.style.display = "block";            
+            localThis.$.userError.style.display = 'block';          
             return;
           })
         }
@@ -257,7 +257,11 @@
         this.$.giphyTable.style.display = "none"
         this.$.favorites.style.display = "block";
       }
-
+      
+      search() {
+        this.$.favorites.style.display = "none"
+        this.$.giphyTable.style.display = "block";
+      }
 
 
       static get properties() {
