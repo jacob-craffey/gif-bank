@@ -48,7 +48,7 @@
     <div id="favorites">
       <h1>Favorites</h1>
       <iron-list id="favoriteList">
-        <template is="dom-repeat" items="{{qryData}}" as="item">
+        <template is="dom-repeat" items="{{qryData.images}}" as="item">
           <div>
               <img src="[[item.$val]]" height="200" width="200">
           </div>
