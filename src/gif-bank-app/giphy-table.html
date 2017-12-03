@@ -16,7 +16,7 @@
 
         paper-button {
           margin-top: 20px;
-          background-color: lightblue;
+          background-color: #5a855a;
         }
 
         paper-input {
@@ -25,6 +25,45 @@
 
           background-color: white;
           border-radius: 5px;
+        }
+
+        #sidebar {
+          position: relative;
+          left: 25px;
+          top: 50px;
+          background-color:#315846;
+          width: 350px;
+          height: 160px;
+          border-radius: 20px;
+        }
+
+        #itemsList {
+          width: 900px;
+          position: relative;
+          right: 15%;
+          background-color: #5a855a;
+          border-radius: 20px;
+          bottom: 50px;
+        }
+
+        img {
+          margin: 5px;
+        }
+
+        img:focus, img:active, img:visited {
+          border-style: solid;
+          border-color: red;
+        }
+
+        #wrapper {
+          margin: auto;
+          position: relative;
+          left: 40%;
+        }
+
+        #sidebar-content {
+          padding-top: 20px;
+          padding-left: 30px;
         }
       </style>
 
@@ -37,22 +76,25 @@
     on-response="handleGiphyResponse"
     debounce-duration="300"></iron-ajax>
 
-    <paper-button id="saveFavorites" on-click="saveFavorites">Save Favorites</paper-button>
+    <div id="sidebar">
+      <div id="sidebar-content">
+          <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
+          <paper-button id="saveFavorites" on-click="saveFavorites">Save Favorites</paper-button>
+      </div>
+    </div>
+
+    <div id="wrapper">
+      <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled  
+        selected-items="{{selectedItems}}" grid>
+          <template>
+              <div id="gif">
+                  <img id="fav"src="[[item]]" height="200" width="200">
+              </div>
+            </template>
+      </iron-list>
+    </div>
+    </div>
     
-
-    <h1>Search for gif</h1>
-    <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
-    </br>
-
-    <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled  
-     selected-items="{{selectedItems}}" >
-        <template>
-            <div id="gif">
-                <img src="[[item]]" height="200" width="200">
-            </div>
-          </template>
-    </iron-list>
-  </div>
 
     </template>
 

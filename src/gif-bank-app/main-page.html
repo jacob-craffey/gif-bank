@@ -11,20 +11,46 @@
     <style>
       :host {
         display: block;
+        color: white;
+      }
+
+
+      #landingPage {
+        background-color: #5a855a;
+        position: relative;
+        margin: auto;
+        width: 700px;
+        height: 700px;
+        border-radius: 20px;
+      }
+
+      #landingPage > h1 {
+        position: relative;
+        top: 30px;
+        color: white;
+        font-size: 55px;
+        text-align: center;
       }
 
       /********** Register **********/
       #register {
         display: none;
+        position: relative;
+        top: 50px;
         width: 500px;
         height: 460px;
 
-        padding-top: 30px;
         margin: auto;
 
-        background-color: #cccccc;
+        background-color: #315846;
+        color: white;
         border-radius: 20px;
         text-align: center;
+      }
+
+      #register h1 {
+        position: relative;
+        top: 15px;
       }
 
       .error {
@@ -36,16 +62,23 @@
       #login {
         /* CTRL-F:: DEBUG */
         display: block;
+        position: relative;
 
         width: 500px;
         height: 350px;
 
-        padding-top: 30px;
+        top: 50px;
         margin: auto;
 
-        background-color: #cccccc;
+        background-color: #315846;
+        color: white;
         border-radius: 20px;
         text-align: center;
+      }
+
+      #login h1 {
+        position: relative;
+        top: 15px;
       }
 
       #credentials {
@@ -55,7 +88,11 @@
 
       paper-button {
         margin-top: 20px;
-        background-color: lightblue;
+        background-color: #5a855a;
+      }
+
+      .paperInput {
+        margin: 10px;
       }
 
       paper-input {
@@ -71,16 +108,17 @@
         display: none;
         height: 75px;
         width: 100%;
-        background-color: lightblue;
+        background-color: #5a855a;
       }
 
       #navbar button {
         height: 75px;
         width: 150px;
-        background-color: lightblue;
+        background-color: #5a855a;
         font-size: 24px;
         font-weight: bold;
         border-style: none;
+        color: white;
       }
 
       #navbar h1 {
@@ -117,38 +155,32 @@
         display: none;
       }
     </style>
-<!-- 
-    <firebase-app id="userDB"
-      auth-domain="gif-bank-66e52.firebaseapp.com"
-      database-url="https://gif-bank-66e52.firebaseio.com"
-      api-key="AIzaSyDxiWWMWwyk8F9jUu6v7n0sNDFzl-Hl_2U"
-      storage-bucket="gif-bank-66e52.appspot.com"
-      messaging-sender-id="416444590172">
-    </firebase-app> -->
     
-    <div id="login">
+    <div id="landingPage">
+      <h1>gif-bank.</h1>
+      <div id="login">
         <h1>Login</h1>
         <div id="credentials">
-            <paper-input type="email" autoValidate="true" id="loginEmail" label="Email address"></paper-input>
-            <paper-input autoValidate="true" id="loginPassword" label="Password" type="password"></paper-input>
+            <paper-input class="paperInput" type="email" autoValidate="true" id="loginEmail" label="Email address"></paper-input>
+            <paper-input class="paperInput" autoValidate="true" id="loginPassword" label="Password" type="password"></paper-input>
         </div>
         <paper-button id="btnLogin" on-click="login">Login</paper-button> <br />
         <paper-button id="btnRegister" on-click="register">Register</paper-button>
     </div>
       
-
     <div id="register">
       <h1>Register</h1>
       <div id="credentials">
-        <paper-input type="email" autoValidate="true" id="registerEmail" label="Email address"></paper-input>
-        <paper-input type="password" autoValidate="true" id="registerPassword" label="Password"></paper-input>
-        <paper-input id="confirmPassword" type="password" autoValidate="true" label="Confirm Password"></paper-input>
+        <paper-input class="paperInput" type="email" autoValidate="true" id="registerEmail" label="Email address"></paper-input>
+        <paper-input class="paperInput" type="password" autoValidate="true" id="registerPassword" label="Password"></paper-input>
+        <paper-input class="paperInput" id="confirmPassword" type="password" autoValidate="true" label="Confirm Password"></paper-input>
       </div>
       <p id="userError" class="error" style="display: none;">This username is already taken</p>
       <paper-button id="btnRegister" on-click="userRegister">Register</paper-button> <br />
       <paper-button id="btnReturn" on-click="onReturn">Return</paper-button>
     </div>
-
+    </div>
+    
     <div id="navbar">
       <h1>gif-bank.</h1>
       <div id="tabs">
@@ -198,6 +230,7 @@
             localStorage.setItem('uid', userKey);
             localStorage.setItem('favorites', user.images == null ? [] : user.images);
             localThis.$.login.style.display = 'none';
+            localThis.$.landingPage.style.display = 'none';
             localThis.$.giphyTable.style.display = 'block';
             localThis.$.navbar.style.display = "flex";
           }
