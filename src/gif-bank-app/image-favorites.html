@@ -10,10 +10,10 @@
     <style>
 
     /********* Favorites **********/
-    #favorites {
-      width: 500px;
-      height: 500px;
-      background-color: #5a855a;
+      #favorites {
+        width: 100%;
+        height: 100%;
+        background-color: #5a855a;
       }
       
       .error {
@@ -34,29 +34,48 @@
       }
 
       #favoriteList {
-        height: 200px;
-        width: 900px;
+        height: 100%;
+        width: 100%;
+        overflow-y: auto;
+      }
+
+      #wrapper {
+        margin: auto;
+        position: relative;
+      }
+
+      
+      :host {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      iron-list {
+        flex: 1 1 auto;
       }
     </style>
 
+    
     <firebase-query
     path="/user/[[uid]]/images"
     data="{{qryData}}">
     </firebase-query>
 
-    <button type="button" on-click="test">test</button>
-
+    <paper-button id="showFavorites" on-click="showFavorites">Show Favorites</paper-button>
     <div id="favorites">
+
       <h1>Favorites</h1>
 
-      <iron-list id="favoriteList" items="[[qryData]]" as="item">
-        <template  >
-          <div>
-            <h1>url : [[item.$val]]</h1>
-            <!-- <img id="image" src="[[item.image]]" height="200" width="200"> -->
-          </div>
-        </template>
-      </iron-list>
+      <div id="wrapper">
+        <iron-list id="favoriteList" items="[[qryData]]" as="item" grid>
+            <template>
+                <div id="gif" class="image-container">
+                    <img src="[[item.$val]]" height="200" width="200">
+                </div>
+            </template>
+        </iron-list>
+      </div>
+
     </div>
 
   </template>
@@ -73,18 +92,11 @@
         console.log(e);
       }
 
-      test() {
-        var rootRef = firebase.database().ref();
-        var userRef = rootRef.child("user");
-        var email = localStorage.getItem('email');
-        var localThis = this;
-
-        userRef.orderByChild('email').equalTo(email).once("value", function(data) {
-          console.log("HEREE" + user.images)
-        })
+      showFavorites() {
+        this.shadowRoot.querySelector('iron-list').fire('iron-resize');
       }
 
-       static get properties() {
+      static get properties() {
 
         return {
           uid: {
@@ -99,7 +111,7 @@
             type: String,
             value: localStorage.getItem('currentFav')
           }
-        };
+        }
       }
     }
 

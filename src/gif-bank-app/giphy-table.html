@@ -67,36 +67,36 @@
         }
       </style>
 
-  <div id="giphyTable">
-    <iron-ajax
-    id="ajax"
-    url="http://api.giphy.com/v1/gifs/random?api_key=qKbUBixbIAeArAGoQX0FxkMm5T9hWj2P"
-    params='{{getParams()}}'
-    handle-as="json"
-    on-response="handleGiphyResponse"
-    debounce-duration="300"></iron-ajax>
+    <div id="giphyTable">
+      <iron-ajax
+      id="ajax"
+      url="http://api.giphy.com/v1/gifs/random?api_key=qKbUBixbIAeArAGoQX0FxkMm5T9hWj2P"
+      params='{{getParams()}}'
+      handle-as="json"
+      on-response="handleGiphyResponse"
+      debounce-duration="300"></iron-ajax>
 
-    <div id="sidebar">
-      <div id="sidebar-content">
-          <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
-          <paper-button id="saveFavorites" on-click="saveFavorites">Save Favorites</paper-button>
+      <div id="sidebar">
+        <div id="sidebar-content">
+            <paper-input id="search" on-keypress="searchGif" label="Search"></paper-input>
+            <paper-button id="saveFavorites" on-click="saveFavorites">Save Favorites</paper-button>
+        </div>
       </div>
-    </div>
 
-    <div id="wrapper">
-      <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled multi-selection
-        selected-items="{{selectedItems}}" grid>
-          <template>
-              <div id="gif" class="image-container">
-                  <img id="fav"src="[[item]]" height="200" width="200" on-click="favoriteSelected">
-              </div>
+      <div id="wrapper">
+        <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled multi-selection
+          selected-items="{{selectedItems}}" grid>
+            <template>
+                <div id="gif" class="image-container">
+                    <img id="fav"src="[[item]]" height="200" width="200" on-click="favoriteSelected">
+                </div>
             </template>
-      </iron-list>
-    </div>
+        </iron-list>
+      </div>
     </div>
     
 
-    </template>
+  </template>
 
   <script>
     /**
@@ -163,18 +163,18 @@
           var favorites = [];
 
           var i = 0;
-
-          for(i = 0; i < user.images.length; i++) {
-            favorites.push(user.images[i])
+          if(user.images) {
+            for(i = 0; i < user.images.length; i++) {
+              favorites.push(user.images[i])
+            }
           }
-
           for(i = 0; i < selectedItems.length; i++) {
             favorites.push(selectedItems[i].src);
 
           }
           console.log(favorites)
           console.log('saved');
-          // firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
+          firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
  
         })
       }
@@ -185,8 +185,8 @@
             selectedItems: {
               type: Object
             }
-            };
         }
+      }
     }
     window.customElements.define(GiphyTable.is, GiphyTable);
   </script>
