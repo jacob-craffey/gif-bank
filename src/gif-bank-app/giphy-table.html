@@ -87,8 +87,8 @@
       <iron-list id="itemsList" items="[[giphyUrls]]" as="item" selection-enabled multi-selection
         selected-items="{{selectedItems}}" grid>
           <template>
-              <div id="gif" class="image-container" on-click="favoriteSelected">
-                  <img id="fav"src="[[item]]" height="200" width="200">
+              <div id="gif" class="image-container">
+                  <img id="fav"src="[[item]]" height="200" width="200" on-click="favoriteSelected">
               </div>
             </template>
       </iron-list>
@@ -169,13 +169,13 @@
           }
 
           for(i = 0; i < selectedItems.length; i++) {
-            favorites.push(selectedItems[i].src)
+            favorites.push(selectedItems[i].src);
+
           }
           console.log(favorites)
           console.log('saved');
-          firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
-          
-
+          // firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
+ 
         })
       }
 

@@ -35,29 +35,31 @@
 
       #favoriteList {
         height: 200px;
+        width: 900px;
       }
     </style>
 
     <firebase-query
-    path="/user/[[uid]]"
+    path="/user/[[uid]]/images"
     data="{{qryData}}">
     </firebase-query>
 
-    
+    <button type="button" on-click="test">test</button>
 
     <div id="favorites">
       <h1>Favorites</h1>
-      <iron-list id="favoriteList">
-        <template is="dom-repeat" items="{{qryData.images}}" as="item">
-          <div>
-              <img src="[[item.$val]]" height="200" width="200">
-          </div>
 
+      <iron-list id="favoriteList" items="[[qryData]]" as="item">
+        <template  >
+          <div>
+            <h1>url : [[item.$val]]</h1>
+            <!-- <img id="image" src="[[item.image]]" height="200" width="200"> -->
+          </div>
         </template>
       </iron-list>
     </div>
 
-    </template>
+  </template>
 
   <script>
     /**
@@ -68,9 +70,18 @@
       static get is() { return 'image-favorites'; }
 
       dataChanged(e) {
-        
-        console.log(e[1]);
-        return e[1];
+        console.log(e);
+      }
+
+      test() {
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");
+        var email = localStorage.getItem('email');
+        var localThis = this;
+
+        userRef.orderByChild('email').equalTo(email).once("value", function(data) {
+          console.log("HEREE" + user.images)
+        })
       }
 
        static get properties() {
@@ -81,7 +92,7 @@
             value: localStorage.getItem('uid')
           },
           qryData: {
-            type: Object,
+            type: Array,
             observer: 'dataChanged'
           },
           test: {
