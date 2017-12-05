@@ -45,6 +45,7 @@
       #btn-change-password {
         position: relative;
         top: 15px;
+        background-color: #315846;
       }
 
       #error {
@@ -66,10 +67,10 @@
         <h4>Enter email:</h4>
         <input type="text" id="email">
         <h4>Enter new password:</h4>
-        <input type="text" id="password">
+        <input type="password" id="password">
         <h4>Confirm new password:</h4>
-        <input type="text" id="confirmPassword"> <br />
-        <button type="button" id="btn-change-password" on-click="changePass">Change Password</button>
+        <input type="password" id="confirmPassword"> <br />
+        <paper-button type="button" id="btn-change-password" on-click="changePass">Change Password</paper-button>
         <h4 id="error"></h4>
       </div>
     </div>
@@ -103,7 +104,23 @@
             localThis.$.error.innerHTML = "Error: Please make sure passwords are matching"
             return;
           }
-          
+
+          var obj = snapshot.val();
+          var user =  obj[Object.keys(obj)[0]];
+          var favorites = [];
+        
+          var userKey = Object.keys(obj)[0];
+
+          var i = 0;
+          if(user.images) {
+            for(i = 0; i < user.images.length; i++) {
+              favorites.push(user.images[i])
+            }
+          }
+
+          firebase.database().ref("user/" + userKey).update({ email: user.email, password: password, images: favorites });
+          localThis.$.error.style.color = "black";
+          localThis.$.error.innerHTML = "Password updated!"
         });
       }
 

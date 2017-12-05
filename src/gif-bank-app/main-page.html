@@ -168,6 +168,11 @@
         display: none;
       }
 
+      #error {
+        color: white;
+        text-align: center;
+      }
+
     </style>
     
     <div id="landingPage">
@@ -180,6 +185,7 @@
         </div>
         <paper-button id="btnLogin" on-click="login">Login</paper-button> <br />
         <paper-button id="btnRegister" on-click="register">Register</paper-button>
+        <h3 id="error"></h3>
     </div>
       
     <div id="register">
@@ -201,7 +207,7 @@
           <button type="button" on-click="search">Search</button>
           <button type="button" on-click="favorites">Favorites</button>
           <button type="button" on-click="account">Account</button>
-          <button type="button" on-click="settings">Settings</button>
+          <button type="button" on-click="logout">Logout</button>
       </div>
     </div>
 
@@ -251,9 +257,11 @@
             localThis.$.landingPage.style.display = 'none';
             localThis.$.giphyTable.style.display = 'block';
             localThis.$.navbar.style.display = "flex";
+            localThis.$.loginEmail.value = "";
+            localThis.$.loginPassword.value = "";
           }
           else {
-            alert('invalid email or password');
+            localThis.$.error.innerHTML = "Invalid username or password";
           }
         });
       }
@@ -327,11 +335,13 @@
         this.$.accountPage.style.display = "block";
       }
 
-      settings() {
+      logout() {
         this.$.favorites.style.display = "none";
         this.$.accountPage.style.display = "none";
         this.$.giphyTable.style.display = "none";
-        this.$.settingsPage.style.display = "block";
+        this.$.navbar.style.display = "none";
+        this.$.landingPage.style.display = "block";
+        this.$.login.style.display = "block"
       }
 
 
