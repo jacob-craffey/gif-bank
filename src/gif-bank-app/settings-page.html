@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+
+<dom-module id="settings-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #settings-wrapper {
+        background-color: #5a855a;
+        width: 800px;
+        height: 500px;
+        position: relative;
+        margin: auto;
+        top: 50px;
+        border-radius: 5px;
+      }
+
+      #settings-wrapper h1 {
+        position: relative;
+        text-align: center;
+        top: 20px;
+
+      }
+    </style>
+
+    <firebase-query
+    path="/user/[[uid]]/images"
+    data="{{qryData}}">
+    </firebase-query>
+
+    <div id="settings-wrapper">
+      <h1>Settings</h1>
+    </div>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class SettingsPage extends Polymer.Element {
+      static get is() { return 'settings-page'; }
+
+      static get properties() {
+
+        return {
+        }
+      }
+    }
+
+    window.customElements.define(SettingsPage.is, SettingsPage);
+  </script>
+</dom-module>

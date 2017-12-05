@@ -158,6 +158,16 @@
       #favorites {
         display: none;
       }
+
+      /********** Account Page **********/
+      #accountPage {
+        display: none;
+      }
+
+      #settingsPage {
+        display: none;
+      }
+
     </style>
     
     <div id="landingPage">
@@ -190,14 +200,18 @@
       <div id="tabs">
           <button type="button" on-click="search">Search</button>
           <button type="button" on-click="favorites">Favorites</button>
-          <button type="button">Account</button>
-          <button type="button">Settings</button>
+          <button type="button" on-click="account">Account</button>
+          <button type="button" on-click="settings">Settings</button>
       </div>
     </div>
 
     <giphy-table class="body-component" id="giphyTable"style="display: none"></giphy-table>
 
     <image-favorites class="body-component" id="favorites"></image-favorites>
+
+    <account-page class="body-component" id="accountPage"></account-page>
+
+    <settings-page class="body-component" id="settingsPage"></settings-page>
 
     <firebase-query
     path="/user">
@@ -293,13 +307,31 @@
       }
 
       favorites() {
-        this.$.giphyTable.style.display = "none"
+        this.$.giphyTable.style.display = "none";
         this.$.favorites.style.display = "block";
+        this.$.settingsPage.style.display = "none";
+        this.$.accountPage.style.display = "none";
       }
       
       search() {
-        this.$.favorites.style.display = "none"
+        this.$.favorites.style.display = "none";
+        this.$.accountPage.style.display = "none";
+        this.$.settingsPage.style.display = "none";
         this.$.giphyTable.style.display = "block";
+      }
+
+      account() {
+        this.$.favorites.style.display = "none";
+        this.$.giphyTable.style.display = "none";
+        this.$.settingsPage.style.display = "none";
+        this.$.accountPage.style.display = "block";
+      }
+
+      settings() {
+        this.$.favorites.style.display = "none";
+        this.$.accountPage.style.display = "none";
+        this.$.giphyTable.style.display = "none";
+        this.$.settingsPage.style.display = "block";
       }
 
 

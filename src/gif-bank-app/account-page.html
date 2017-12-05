@@ -1,0 +1,119 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+
+<dom-module id="account-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #account-wrapper {
+        background-color: #5a855a;
+        width: 800px;
+        height: 500px;
+        position: relative;
+        margin: auto;
+        top: 50px;
+        border-radius: 5px;
+      }
+
+      #account-wrapper h1 {
+        position: relative;
+        text-align: center;
+        top: 20px;
+      }
+
+      #change-password {
+        display: block;
+        position: relative;
+        margin: auto;
+        top: 30px;
+        width: 400px;
+        border-color: #315846;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 5px;
+        text-align: center;
+        padding-bottom: 30px;
+      }
+
+      #btn-change-password {
+        position: relative;
+        top: 15px;
+      }
+
+      #error {
+        position: relative;
+        top: 20px;
+        color: rgb(104, 44, 44);
+      }
+    </style>
+
+    <firebase-query
+    path="/user/[[uid]]/images"
+    data="{{qryData}}">
+    </firebase-query>
+
+    <div id="account-wrapper">
+      <h1>Account</h1>
+      <div id="change-password">
+        <h3>Change Password</h3>
+        <h4>Enter email:</h4>
+        <input type="text" id="email">
+        <h4>Enter new password:</h4>
+        <input type="text" id="password">
+        <h4>Confirm new password:</h4>
+        <input type="text" id="confirmPassword"> <br />
+        <button type="button" id="btn-change-password" on-click="changePass">Change Password</button>
+        <h4 id="error"></h4>
+      </div>
+    </div>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class AccountPage extends Polymer.Element {
+      static get is() { return 'account-page'; }
+
+      changePass() {
+        var email = this.$.email.value;
+        var password = this.$.password.value;
+        var confirmPassword = this.$.confirmPassword.value;
+        var localThis = this;
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");
+
+        userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
+          var fireBaseObj = snapshot.val()
+          if (fireBaseObj == null) {
+            localThis.$.error.innerHTML = "Error: Email not found in our system"
+            return;
+          }
+
+          if (password != confirmPassword) {
+            localThis.$.error.innerHTML = "Error: Please make sure passwords are matching"
+            return;
+          }
+          
+        });
+      }
+
+      static get properties() {
+
+        return {
+        }
+      }
+    }
+
+    window.customElements.define(AccountPage.is, AccountPage);
+  </script>
+</dom-module>
