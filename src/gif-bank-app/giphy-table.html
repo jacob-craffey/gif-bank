@@ -173,11 +173,7 @@
         userRef.orderByChild('email').equalTo(email).once("value", function(data) {
           var obj = data.val()
           var user =  obj[Object.keys(obj)[0]];
-          var userKey = Object.keys(obj)[0]
-          console.log(obj)
-          console.log(user)
-
-          //var localFavorites = localStorage.getItem('favorites');
+          var userKey = Object.keys(obj)[0];
           var selectedItems = localThis.shadowRoot.querySelectorAll(".selected");
 
           var favorites = [];
@@ -185,15 +181,13 @@
           var i = 0;
           if(user.images) {
             for(i = 0; i < user.images.length; i++) {
-              favorites.push(user.images[i])
+              favorites.push(user.images[i]);
             }
           }
           for(i = 0; i < selectedItems.length; i++) {
             favorites.push(selectedItems[i].src);
 
           }
-          console.log(favorites)
-          console.log('saved');
           firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
  
         })

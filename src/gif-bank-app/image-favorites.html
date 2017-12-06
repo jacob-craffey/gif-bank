@@ -54,11 +54,19 @@
         display: flex;
       }
 
-      
+      .selected {
+        border-style: solid;
+        border-color: red;
+      }
+
       :host {
         height: 100vh;
         display: flex;
         flex-direction: column;
+      }
+
+      img {
+        margin: 5px;
       }
       iron-list {
         flex: 1 1 auto;
@@ -71,14 +79,15 @@
     </firebase-query>
 
     <paper-button id="showFavorites" on-click="showFavorites">Show Favorites</paper-button>
+    <paper-button id="deleteFavorites" on-click="deleteFavorites">Delete</paper-button>
 
     <input id="clipboard" type="text" onClick="this.select();" readonly>
     
     <div id="favorites">
       <h1>Favorites</h1>
       <div id="wrapper">
-        <iron-list id="favoriteList" items="[[qryData]]" as="item" 
-        selection-enabled selected-items="{{selectedItems}}" grid>
+        <iron-list id="favoriteList" items="[[qryData]]" as="item" multi-selection
+        selection-enabled selected-items="{{itemsToDelete}}" grid>
             <template>
                 <div id="gif" class="image-container">
                     <img src="[[item.$val]]" height="200" width="200" on-click="favoriteSelected">
@@ -105,10 +114,45 @@
 
       favoriteSelected(e) {
         this.$.clipboard.value = e.target.src;
+        var clicked = e.target;
+        var selectedClass = 'selected';
+        if(clicked.classList.contains(selectedClass)) {
+          clicked.classList.remove(selectedClass);
+          return;
+        }
+        e.target.className += ' ' + selectedClass;
       }
 
       showFavorites() {
         this.shadowRoot.querySelector('iron-list').fire('iron-resize');
+        console.log("here")
+      }
+
+      deleteFavorites() {
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");
+        var email = localStorage.getItem('email');
+        var localThis = this;
+
+        var user = userRef.orderByChild('email').equalTo(email).once("value", function(data) {
+          var obj = data.val();
+          var user =  obj[Object.keys(obj)[0]];
+          var userKey = Object.keys(obj)[0];
+
+          var selectedItems = localThis.shadowRoot.querySelectorAll(".selected");
+
+
+          for(var i = 0; i < selectedItems.length; i++) {
+            for(var j = 0; j < user.images.length; j++) {
+              if(user.images[j] == selectedItems[i].src) {
+                user.images.splice(j, 1);
+                break;
+              }
+            }
+
+          }
+          firebase.database().ref("user/" + userKey).update(user);
+        })
       }
 
       static get properties() {
@@ -121,6 +165,9 @@
           qryData: {
             type: Array,
             observer: 'dataChanged'
+          },
+          itemsToDelete: {
+            type: Object
           }
         }
       }

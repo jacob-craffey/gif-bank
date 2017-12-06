@@ -240,7 +240,7 @@
         var password = this.$.loginPassword.value;
         var localThis = this;
 
-        userRef.orderByChild('email').equalTo(email).on("value", function(snapshot) {
+        userRef.orderByChild('email').equalTo(email).once("value", function(snapshot) {
           var fireBaseObj = snapshot.val()
           if (fireBaseObj == null) {
             return;
