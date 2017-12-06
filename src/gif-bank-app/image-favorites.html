@@ -73,11 +73,6 @@
       }
     </style>
 
-    <firebase-query id="query"
-    path="/user/[[uid]]/images"
-    data="{{qryData}}">
-    </firebase-query>
-
     <paper-button id="showFavorites" on-click="showFavorites">Show Favorites</paper-button>
     <paper-button id="deleteFavorites" on-click="deleteFavorites">Delete</paper-button>
 
@@ -90,7 +85,7 @@
         selection-enabled selected-items="{{itemsToDelete}}" grid>
             <template>
                 <div id="gif" class="image-container">
-                  <img src="[[item.$val]]" height="200" width="200" on-click="favoriteSelected">
+                  <img src="[[item]]" height="200" width="200" on-click="favoriteSelected">
                 </div>
             </template>
         </iron-list>
@@ -114,8 +109,7 @@
 
       ready() {
         super.ready();
-        this.$.query.reset();
-        console.log("query here")
+        this.set('qryData', []);
       }
 
       favoriteSelected(e) {
@@ -130,10 +124,20 @@
       }
 
       showFavorites() {
-        // this.$.query.path = "null";
-        // this.$.query.path = "/user/[[uid]]/images"
+        
+        var rootRef = firebase.database().ref();
+        var userRef = rootRef.child("user");
+        var email = localStorage.getItem('email');
+        var localThis = this;
+
+        userRef.orderByChild('email').equalTo(email).once("value", function(data) {
+          var obj = data.val();
+          var user =  obj[Object.keys(obj)[0]];
+          var userKey = Object.keys(obj)[0];
+          localThis.set('qryData', user.images);
+
+        })
         this.shadowRoot.querySelector('iron-list').fire('iron-resize');
-        console.log("here")
       }
 
       deleteFavorites() {
@@ -142,7 +146,7 @@
         var email = localStorage.getItem('email');
         var localThis = this;
 
-        var user = userRef.orderByChild('email').equalTo(email).once("value", function(data) {
+        userRef.orderByChild('email').equalTo(email).once("value", function(data) {
           var obj = data.val();
           var user =  obj[Object.keys(obj)[0]];
           var userKey = Object.keys(obj)[0];
