@@ -162,6 +162,7 @@
             }
 
           }
+          localThis.set('qryData', user.images);
           firebase.database().ref("user/" + userKey).update(user);
         })
       }
