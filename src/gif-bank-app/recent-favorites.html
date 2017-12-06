@@ -1,0 +1,63 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+
+<dom-module id="recent-favorites">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #recent-wrapper {
+        position: relative;
+        margin: auto;
+        width: 800px;
+        height: 500px;
+        background-color: #5a855a;
+        border-radius: 5px;
+        text-align: center;
+      }
+    </style>
+
+    <firebase-query id="query"
+    path="[[path]]"
+    data="{{qryData}}">
+    </firebase-query>
+
+
+    <div id="recent-wrapper">
+      <h1>Recent Favorites</h1>
+      <iron-list id="globalList" items="[[qryData]]" as="item" 
+      selection-enabled selected-items="{{selectedItems}}" grid>
+          <template>
+              <div id="gif" class="image-container">
+                <img src="[[item.$val]]" height="200" width="200" on-click="favoriteSelected">
+              </div>
+          </template>
+      </iron-list>
+    </div>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class RecentFavorites extends Polymer.Element {
+      static get is() { return 'recent-favorites'; }
+
+      static get properties() {
+
+        return {
+        }
+      }
+    }
+
+    window.customElements.define(RecentFavorites.is, RecentFavorites);
+  </script>
+</dom-module>

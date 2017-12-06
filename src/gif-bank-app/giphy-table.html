@@ -195,7 +195,7 @@
           console.log(favorites)
           console.log('saved');
           firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
- 
+          firebase.database().ref("globalFav/").set({image, favorites});
         })
       }
 

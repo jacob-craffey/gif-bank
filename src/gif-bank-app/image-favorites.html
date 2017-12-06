@@ -65,8 +65,16 @@
       }
     </style>
 
-    <firebase-query
-    path="/user/[[uid]]/images"
+<firebase-app id="userDB"
+auth-domain="gif-bank-66e52.firebaseapp.com"
+database-url="https://gif-bank-66e52.firebaseio.com"
+api-key="AIzaSyDxiWWMWwyk8F9jUu6v7n0sNDFzl-Hl_2U"
+storage-bucket="gif-bank-66e52.appspot.com"
+messaging-sender-id="416444590172">
+</firebase-app>
+
+    <firebase-query isNew reset id="query"
+    path="[[path]]"
     data="{{qryData}}">
     </firebase-query>
 
@@ -81,7 +89,7 @@
         selection-enabled selected-items="{{selectedItems}}" grid>
             <template>
                 <div id="gif" class="image-container">
-                    <img src="[[item.$val]]" height="200" width="200" on-click="favoriteSelected">
+                  <img src="[[item.$val]]" height="200" width="200" on-click="favoriteSelected">
                 </div>
             </template>
         </iron-list>
@@ -103,12 +111,25 @@
         console.log(e);
       }
 
+      ready() {
+        super.ready();
+        this.$.query.reset();
+        console.log("query here")
+      }
+
       favoriteSelected(e) {
         this.$.clipboard.value = e.target.src;
       }
 
       showFavorites() {
+        // this.$.query.path = "null";
+        // this.$.query.path = "/user/[[uid]]/images"
         this.shadowRoot.querySelector('iron-list').fire('iron-resize');
+      }
+
+      pathTest(e) {
+        console.log(this.uid);
+        this.path = "/user/" + localStorage.getItem('uid') + "/images"
       }
 
       static get properties() {
@@ -121,6 +142,11 @@
           qryData: {
             type: Array,
             observer: 'dataChanged'
+          },
+          path: {
+            type: String,
+            value: "/user/" +[[this.uid]] + "/images",
+            observer: 'pathTest'
           }
         }
       }

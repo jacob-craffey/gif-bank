@@ -117,7 +117,7 @@
 
       #navbar button {
         height: 75px;
-        width: 150px;
+        padding: 15px;
         background-color: #5a855a;
         font-size: 24px;
         font-weight: bold;
@@ -173,7 +173,12 @@
         text-align: center;
       }
 
+      #recentFavorites {
+        display: none;
+      }
+
     </style>
+
     
     <div id="landingPage">
       <h1>gif-bank.</h1>
@@ -206,8 +211,10 @@
       <div id="tabs">
           <button type="button" on-click="search">Search</button>
           <button type="button" on-click="favorites">Favorites</button>
+          <button type="button" on-click="recentFavorites">Recent Favorites</button>
           <button type="button" on-click="account">Account</button>
           <button type="button" on-click="logout">Logout</button>
+          
       </div>
     </div>
 
@@ -219,6 +226,7 @@
 
     <settings-page class="body-component" id="settingsPage"></settings-page>
 
+    <recent-favorites class="body-component" id="recentFavorites"></recent-favorites>
     <firebase-query
     path="/user">
     </firebase-query>
@@ -319,6 +327,7 @@
         this.$.favorites.style.display = "block";
         this.$.settingsPage.style.display = "none";
         this.$.accountPage.style.display = "none";
+        this.$.recentFavorites.style.display = "none";
       }
       
       search() {
@@ -326,6 +335,7 @@
         this.$.accountPage.style.display = "none";
         this.$.settingsPage.style.display = "none";
         this.$.giphyTable.style.display = "block";
+        this.$.recentFavorites.style.display = "none";
       }
 
       account() {
@@ -333,15 +343,27 @@
         this.$.giphyTable.style.display = "none";
         this.$.settingsPage.style.display = "none";
         this.$.accountPage.style.display = "block";
+        this.$.recentFavorites.style.display = "none";
       }
 
       logout() {
+        localStorage.clear();
         this.$.favorites.style.display = "none";
         this.$.accountPage.style.display = "none";
         this.$.giphyTable.style.display = "none";
         this.$.navbar.style.display = "none";
         this.$.landingPage.style.display = "block";
         this.$.login.style.display = "block"
+        this.$.recentFavorites.style.display = "none";
+      }
+
+      recentFavorites() {
+        this.$.favorites.style.display = "none";
+        this.$.accountPage.style.display = "none";
+        this.$.giphyTable.style.display = "none";
+        this.$.landingPage.style.display = "none";
+        this.$.login.style.display = "none"
+        this.$.recentFavorites.style.display = "block";
       }
 
 
