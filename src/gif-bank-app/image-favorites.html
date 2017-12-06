@@ -133,7 +133,6 @@
         userRef.orderByChild('email').equalTo(email).once("value", function(data) {
           var obj = data.val();
           var user =  obj[Object.keys(obj)[0]];
-          var userKey = Object.keys(obj)[0];
           localThis.set('qryData', user.images);
 
         })
