@@ -188,9 +188,7 @@
             favorites.push(selectedItems[i].src);
 
           }
-          firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });
-          firebase.database().ref("globalFav/").set({image, favorites});
-        })
+          firebase.database().ref("user/" + userKey).update({ email: user.email, password: user.password, images: favorites });        })
       }
 
       static get properties() {
